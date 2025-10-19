@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+    {% if message %}
+<div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+    {{message}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
+<div class="container my-4">
+    <h2 class="mb-4" style="color: var(--text-primary);">All Notes</h2>
+    {% if result|length == 0 %}
+    <div class="empty-state">
+        <h3>No notes found</h3>
+        <p>Add some notes first!</p>
+    </div>
+{% else %}
+<div class="notes-grid">
+    {% for note in result %}
+    <div class="note-card">
+        <h3>{{ note.title }}</h3>
+        <p>{{ note.description }}</p>
+        <form action="/do" method="post">
+            <input type="hidden" name="id" value="{{ note._id }}">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+</div>
+{% endblock %}

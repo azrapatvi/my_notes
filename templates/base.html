@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes App - Keep Your Thoughts</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #14b8a6 0%, #06b6d4 50%, #ff6b6b 100%);
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --accent-teal: #14b8a6;
+            --accent-dark-teal: #0d9488;
+            --accent-coral: #ff6b6b;
+            --accent-orange: #ff8c42;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --border: #e2e8f0;
+        }
+
+        .dark-theme {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-gradient: linear-gradient(135deg, #0d9488 0%, #06b6d4 100%);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --accent-teal: #2dd4bf;
+            --accent-dark-teal: #14b8a6;
+            --accent-coral: #ff6b6b;
+            --accent-orange: #ffa07a;
+            --shadow: rgba(0, 0, 0, 0.4);
+            --border: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            background: var(--bg-gradient);
+            padding: 1.2rem 2rem;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h1 {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-weight: 600;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .note-form {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px var(--shadow);
+            margin-bottom: 3rem;
+            border: 3px solid var(--accent-teal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .note-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent-teal), var(--accent-coral), var(--accent-orange));
+        }
+
+        .note-form h2 {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--accent-teal), var(--accent-coral));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-teal);
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-coral) 100%);
+            color: white;
+            border: none;
+            padding: 1.1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 25px rgba(20, 184, 166, 0.4);
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 35px rgba(20, 184, 166, 0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.8rem;
+        }
+
+        .note-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1.8rem;
+            box-shadow: 0 8px 25px var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+            overflow: hidden;
+        }
+
+        .note-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent-teal), var(--accent-coral));
+        }
+
+        .note-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 45px var(--shadow);
+            border-color: var(--accent-teal);
+        }
+
+        .note-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            font-size: 1.4rem;
+            word-wrap: break-word;
+            font-weight: 700;
+        }
+
+        .note-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.2rem;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .note-card .delete-btn {
+            background: linear-gradient(135deg, var(--accent-coral), var(--accent-orange));
+            color: white;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .note-card .delete-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px var(--shadow);
+            border: 3px dashed var(--accent-teal);
+        }
+
+        .empty-state h3 {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav h1 {
+                font-size: 1.5rem;
+            }
+
+            .theme-toggle {
+                padding: 0.5rem 1rem;
+                font-size: 1rem;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .note-form {
+                padding: 1.8rem;
+            }
+
+            .note-form h2 {
+                font-size: 1.5rem;
+            }
+
+            .notes-grid {
+                grid-template-columns: 1fr;
+                gap: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav h1 {
+                font-size: 1.3rem;
+            }
+
+            .note-form {
+                padding: 1.5rem;
+            }
+
+            .submit-btn {
+                padding: 0.9rem 2rem;
+                font-size: 1rem;
+            }
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        /* Make hamburger icon white */
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255,0.9)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg" style="background: var(--bg-gradient); box-shadow: 0 4px 20px var(--shadow);">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white fw-bold" href="#">📝 My Notes</a>
+
+            <!-- Hamburger button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar links -->
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-bold btn btn-outline-light me-2" href="/">Add Notes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-bold btn btn-outline-light me-2" href="/notes">📄 View
+                            Notes</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="theme-toggle btn mt-2 mt-lg-0">🌓 Toggle Theme</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <div>
+        {% block content %}
+        {% endblock %}
+    </div>
+    <script>
+        let darkMode = JSON.parse(localStorage.getItem('darkMode')) || false;
+
+        function applyTheme() {
+            if (darkMode) {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        }
+
+        function toggleTheme() {
+            darkMode = !darkMode;
+            localStorage.setItem('darkMode', JSON.stringify(darkMode));
+            applyTheme();
+        }
+
+        // Apply theme when page loads
+        window.addEventListener('DOMContentLoaded', applyTheme);
+
+        // Attach toggle button
+        const themeToggleBtn = document.querySelector('.theme-toggle');
+        themeToggleBtn.addEventListener('click', toggleTheme);
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
